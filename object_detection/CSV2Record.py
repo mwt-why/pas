@@ -7,7 +7,7 @@ import io
 import pandas as pd
 import tensorflow as tf
 
-os.chdir('/home/why/workspace/python/pas/models/research')
+# os.chdir('/home/why/workspace/python/pas/models/research')
 
 
 def class_text_to_int(row_label):
@@ -74,7 +74,7 @@ def main():
         writer.write(tf_example.SerializeToString())
 
     writer.close()
-    output_path = CommConst.generated_path
+    output_path = CommConst.data_path
     print('Successfully created the TFRecords: {}'.format(output_path))
 
 
