@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pb;
+
+message Item{
+	string name = 1;
+	int32 id = 2;
+	string display_name = 3;
+}
+
+message ItemInfo{
+	repeated Item item = 1;
+}
