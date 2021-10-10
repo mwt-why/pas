@@ -3,6 +3,7 @@ import cv2
 
 image_path = '/home/why/dataset/train/screenshot.jpg'
 
-d = u2.connect()
+# d = u2.connect()
+d = u2.connect_wifi('192.168.31.184')
 image = d.screenshot(format='opencv')
 cv2.imwrite(image_path, image)
