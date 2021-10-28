@@ -1,9 +1,13 @@
 import urllib3
 import json
+from script import ty
+import _thread
+import time
 
 ERROR = -99
 base_url = 'http://127.0.0.1:8080/'
 http = urllib3.PoolManager()
+cur_devs = set()
 
 
 def get(url, params):
@@ -17,13 +21,26 @@ def get(url, params):
 
 
 def script(mac):
-    # 根据mac地址获取任务
-    data = get('subTask/'+mac,0)
-    # 把所有东西装到config中
-    print(data)
-    # 把config传递到脚本中
-    # 启动脚本
+    data = get('subTask/'+mac, 0)
+    ty = Ty(data)
+    ty.run()
 
 
-data = get('subTask/dev', 0)
-script(data[0])
+def boot_thread(devs):
+    try:
+        for dev in devs:
+            _thread.start_new_thread(script)
+            cur_devs.add(dev)
+    except:
+        print('Error,线程无法启动')
+
+
+while True:
+    time.sleep(3)
+    rec_devs = get('subTask/dev', 0)
+    if rec_devs is None or len(rec_devs) == 0:
+        continue
+    if cur_devs != None or len(cur_devs) != 0:
+        diff = (rec_devs).difference(cur_devs)
+        if len(diff) != 0:
+            boot_thread(diff)

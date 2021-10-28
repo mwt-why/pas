@@ -11,5 +11,5 @@ class Ty(BaseScript):
         return 'end'
 
 
-ty = Ty('192.168.31.184','0')
+ty = Ty('172.20.10.2','0')
 ty.run()

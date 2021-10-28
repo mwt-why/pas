@@ -2,19 +2,23 @@ import uiautomator2 as u2
 import logging as log
 import cv2
 import time
-
+import random
+import sys
+sys.path.append('home/why/workspace/python/pas/word')
+from wordUtil import easy_ocr
 base_image_pathe = '/home/why/workspace/python/pas/images'
 
 
 class BaseScript:
-    dev_num = '0'
-    ip = '0,0,0,0'
     d = None
+    task_data = None
+    image_path = None
 
-    def __init__(self, ip, dev_num):
-        self.ip = ip
-        self.dev_num = dev_num
-        self.d = u2.connect_wifi(ip)
+    def __init__(self, task_data):
+        self.task_data = task_data
+        self.d = u2.connect_wifi(task_data['ip'])
+        self.image_path = base_image_pathe + '/' + \
+            task_data['id'] + '/'+'screen.jpg'
 
     def start(self):
         log.warn("this is a abtract method,please implement it")
@@ -31,6 +35,21 @@ class BaseScript:
             time.sleep(3)
 
     def shot_screen(self):
-        image_path = base_image_pathe + '/' + self.dev_num + '/'+'screen.jpg'
         image = self.d.screenshot(format='opencv')
-        cv2.imwrite(image_path, image)
+        cv2.imwrite(self.image_path, image)
+
+    def get_word_box(self, word):
+        result = easy_ocr(self.image_path)
+        for r in result:
+            if word in r:
+                return [0]
+        return None
+
+    def click_box(box):
+        x = box[3][0] - box[0][0]
+        y = box[3][1] - box[0][1]
+        rx = random.randint(0, x)
+        ry = random.randint(0, y)
+        x = box[0][0] + rx
+        y = box[0][1] + ry
+        d.click(x, y)
