@@ -1,14 +1,14 @@
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-import matplotlib.pyplot as plt
+from od.comm_const import CommConst
 import os
-from object_detection.utils import visualization_utils as viz_utils
-from six import BytesIO
-from object_detection.utils import label_map_util
-from object_detection.utils import config_util
+
 from object_detection.builders import model_builder
+from object_detection.utils import config_util, label_map_util
+from six import BytesIO
 import matplotlib
+
 matplotlib.use('tkagg')
 
 path2config = '/home/why/dataset/result/pipeline.config'
@@ -23,7 +23,7 @@ detection_model = model_builder.build(
 ckpt = tf.compat.v2.train.Checkpoint(model=detection_model)
 ckpt.restore(os.path.join(path2checkpoint, 'ckpt-0')).expect_partial()
 
-path2lable_map = '/home/why/dataset/train/game_label_map.pbtxt'
+path2lable_map = CommConst.label_map_path
 category_index = label_map_util.create_category_index_from_labelmap(
     path2lable_map, use_display_name=True)
 
@@ -43,10 +43,7 @@ def load_image_into_numpy_array(path):
         (im_height, im_width, 3)).astype(np.uint8)
 
 
-image_path = '/home/why/workspace/python/pas/images/0/screen.jpg'
-
-
-def get_detected_result():
+def get_detected_result(image_path):
     image_np = load_image_into_numpy_array(image_path)
     input_tensor = tf.convert_to_tensor(
         np.expand_dims(image_np, 0), dtype=tf.float32)
@@ -71,5 +68,22 @@ def get_detected_result():
             })
     return coordinates
 
-coordinates = get_detected_result()
-print(coordinates)
+
+def get_highest_score_box(image_path, label):
+    boxes = get_detected_result(image_path)
+    cur_score = 0
+    index = 0
+    highest_score_index = index
+    for b in boxes:
+        if b['class_name'] == label and b['score'] > cur_score:
+            cur_score = b['score']
+            highest_score_index = index
+        index += 1
+    return boxes[highest_score_index]
+
+
+p = '/home/why/workspace/python/pas/images/0/1.jpg'
+# box = get_highest_score_box(p, 'close')
+box = get_detected_result(p)
+for b in box:
+    print(b)

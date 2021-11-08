@@ -1,12 +1,14 @@
-from comm_const import CommConst
 from collections import namedtuple, OrderedDict
 from object_detection.utils import dataset_util
+from od import pb_util
+from od.comm_const import CommConst
 from PIL import Image
 import os
 import io
 import pandas as pd
 import tensorflow as tf
-import pb_util
+
+
 # os.chdir('/home/why/workspace/python/pas/models/research')
 
 

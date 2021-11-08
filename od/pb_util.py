@@ -1,7 +1,9 @@
-from comm_const import CommConst
 import tensorflow as tf
 from google.protobuf import text_format
-import item_pb2
+
+from od import item_pb2
+from od.comm_const import CommConst
+
 
 def load_pbtxt_file(path):
     if not tf.io.gfile.exists(path):
@@ -20,5 +22,3 @@ def get_pbtxt_id(name):
         if item.name == name:
             return item.id
     return 0
-
-

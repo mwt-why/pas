@@ -1,8 +1,7 @@
-import os
 import glob
 import pandas as pd
 import xml.etree.ElementTree as ET
-from comm_const import CommConst
+from od.comm_const import CommConst
 
 
 def xml_to_csv(path):
