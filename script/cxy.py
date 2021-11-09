@@ -14,6 +14,7 @@ task_index_list = [1, 3, 4]
 task_map = {'must_do': 0, 'demon': 0, 'fight': 0, 'casual': 0}
 key_dict = {'click_daily': 0, 'click_wsw': 0}
 menu_button = (1746, 63)
+fb = 0
 
 
 class CXY(BaseScript):
@@ -27,7 +28,7 @@ class CXY(BaseScript):
     def start_game(self):
         box = self.get_word_box('公告')
         if box is not None:
-            pass
+            self.click_x_y(1880, 73)
         box = self.get_word_box('开始游戏')
         if box is not None:
             self.click_box(box)
@@ -50,6 +51,8 @@ class CXY(BaseScript):
         return 'rc'
 
     def rc(self):
+        if fb == 0:
+            return 'fb'
         self.click_word_list(('日程', '目程', '圄程'))
         if self.get_word_box('全部活动') is None:
             return 'prepare'
@@ -135,6 +138,7 @@ class CXY(BaseScript):
         return 'go_xl'
 
     def fb(self):
+        self.click_word('副本')
         self.click_word('进入副本')
         self.click_word('普通')
         self.click_word('组队')
@@ -158,8 +162,10 @@ class CXY(BaseScript):
         self.click_word('确定')
         self.click_word('确定')
         self.click_word('跳过')
-        self.click_word('继续挑战')
-        return 'fb_doing'
+        if self.get_word_box('继续挑战') is not None and self.get_word_box('关闭'):
+            self.click_word('关闭')
+            return 'fb'
+        return 'pre_fb'
 
 
 config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc'}

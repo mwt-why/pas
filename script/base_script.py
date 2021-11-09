@@ -7,6 +7,7 @@ import random
 from word.wordUtil import easy_ocr
 
 base_image_path = '/home/why/workspace/python/pas/images'
+EXIT = 0
 
 
 class BaseScript:
@@ -30,7 +31,7 @@ class BaseScript:
             print('current method is:' + method_name)
             log.info('current method is:' + method_name)
             if method_name == 'end':
-                break
+                return EXIT
             time.sleep(1)
 
     def shot_screen(self):
@@ -90,7 +91,7 @@ class BaseScript:
                     self.click_box(r[0])
                     self.pre_enter_count += 1
                     return 0
-            if self.task_data['role_name'] in r and self.pre_enter_count > 0:
+            if self.task_data['role_name'] in r[1] and self.pre_enter_count > 0:
                 return 1
         return 2
 
