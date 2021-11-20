@@ -71,11 +71,8 @@ class Start(BaseScript):
         box = self.get_word_box(role_name)
         if box is not None:
             return 'end'
-        self.walk_ahead()
+        self.walk_ahead(1)
         return 'boon_hall'
-
-    def walk_ahead(self):
-        self.d.swipe_ext('up', box=(320, 500, 320, 850))
 
 
 config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行'}

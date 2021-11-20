@@ -21,7 +21,7 @@ def get(url, params):
 
 
 def script(mac):
-    data = get('subTask/'+mac, 0)
+    data = get('subTask/' + mac, 0)
     ty = Ty(data)
     ty.run()
 

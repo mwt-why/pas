@@ -19,8 +19,17 @@ class BaseScript:
 
     def __init__(self, task_data):
         self.task_data = task_data
-        self.d = u2.connect_wifi(task_data['ip'])
+        self.connect()
         self.image_path = base_image_path + '/' + task_data['id'] + '/' + 'screen.jpg'
+
+    def connect(self):
+        device = self.task_data['device']
+        if device is not None:
+            self.d = u2.connect(device)
+            return
+        ip = self.task_data['ip']
+        if ip is not None:
+            self.d = u2.connect(ip)
 
     def run(self):
         method_name = self.start()
@@ -124,3 +133,7 @@ class BaseScript:
             if word in r[1]:
                 return r[0]
         return None
+
+    def walk_ahead(self, gap):
+        for i in range(gap):
+            self.d.swipe_ext('up', box=(320, 500, 320, 850))

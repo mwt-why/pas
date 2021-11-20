@@ -4,11 +4,14 @@ from script.base_script import BaseScript
 class Xl(BaseScript):
     def start(self):
         self.click_x_y(953, 705)
-        return 'team_up'
+        return 'do_task'
 
-    def team_up(self):
+    def do_task(self):
         self.click_word('确定')
-        return 'team_up'
+        self.click_word('开启寻灵任务')
+        self.click_word('前往目标')
+        self.click_word('使用')
+        return 'do_task'
 
 
 config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行'}
