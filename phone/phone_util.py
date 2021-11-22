@@ -7,4 +7,3 @@ d = u2.connect('emulator-5554')
 # d = u2.connect_wifi('10.0.2.16')
 image = d.screenshot(format='opencv')
 cv2.imwrite(image_path, image)
-

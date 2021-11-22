@@ -27,6 +27,7 @@ class Start(BaseScript):
         return 'start_game'
 
     def pre_start(self):
+        self.click_word('开启云垂')
         box = self.get_word_box('今日不再弹出')
         if box is not None:
             self.click_x_y(1985, 130)

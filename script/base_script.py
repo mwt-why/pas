@@ -19,17 +19,20 @@ class BaseScript:
 
     def __init__(self, task_data):
         self.task_data = task_data
-        self.connect()
+        # self.connect()
+        ip = task_data['ip']
+        self.d = u2.connect_wifi(ip)
         self.image_path = base_image_path + '/' + task_data['id'] + '/' + 'screen.jpg'
 
-    def connect(self):
-        device = self.task_data['device']
-        if device is not None:
-            self.d = u2.connect(device)
-            return
-        ip = self.task_data['ip']
-        if ip is not None:
-            self.d = u2.connect(ip)
+    # def connect(self):
+
+    # device = self.task_data['ip']
+    # if device is not None:
+    #     self.d = u2.connect_wifi(device)
+    #     return
+    # ip = self.task_data['ip']
+    # if ip is not None:
+    #     self.d = u2.connect(ip)
 
     def run(self):
         method_name = self.start()
