@@ -6,7 +6,7 @@ import random
 
 from word.wordUtil import easy_ocr
 
-base_image_path = '/home/why/workspace/python/pas/images'
+base_image_path = '/home/tommy/work/python/pas/images/'
 EXIT = 0
 
 
