@@ -19,6 +19,6 @@ class Gj(BaseScript):
         return 'do_task'
 
 
-config = {'id': '0', 'ip': '192.168.43.65', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行'}
+config = {'id': '0', 'ip': '192.168.43.65', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行', 'type': '1'}
 task = Gj(config)
 task.run()
