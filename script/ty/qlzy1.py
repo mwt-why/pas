@@ -1,7 +1,8 @@
 from script.base_script import BaseScript
 import time
 
-#青林之野打６次
+
+# 青林之野打６次
 class Ql(BaseScript):
     def start(self):
         self.click_x_y(815, 673)
