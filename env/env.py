@@ -9,7 +9,6 @@ class Env:
     def __init__(self):
         stream = open(env_path, 'r')
         self.env_dict = yaml.safe_load(stream)
-        print(self.env_dict)
 
     def get_value(self, key):
         if len(self.env_dict) == 0:
