@@ -1,6 +1,6 @@
 from script.base_script import BaseScript
 
-
+#寻灵
 class Xl(BaseScript):
     def start(self):
         self.click_x_y(953, 705)
