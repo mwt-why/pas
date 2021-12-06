@@ -12,18 +12,15 @@ class HttpUtil:
         self.base_url = base_url
 
     def get(self, url, params):
-        http.request(
-            'GET',
-            self.base_url + '/' + url,
-            fields=params
-        )
+        return self.request("GET", self.base_url + '/' + url, params)
 
     def post(self, url, data):
+        return self.request("POST", self.base_url + '/' + url, data)
 
     @staticmethod
-    def request(self, method, url, payload):
+    def request(way, url, payload):
         resp = http.request(
-            method,
+            way,
             url,
             fields=payload
         )

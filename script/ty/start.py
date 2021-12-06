@@ -76,6 +76,6 @@ class Start(BaseScript):
         return 'boon_hall'
 
 
-config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行'}
+config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行', 'type': '1'}
 start = Start(config)
 start.run()
