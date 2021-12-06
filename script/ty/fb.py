@@ -1,6 +1,7 @@
 from script.base_script import BaseScript
 
 
+# 副本
 class Fb(BaseScript):
     def start(self):
         box = self.get_word_box('副本')

@@ -2,6 +2,7 @@ from script.base_script import BaseScript
 import time
 
 
+# 万事屋
 class Wsw(BaseScript):
     def start(self):
         self.click_x_y(478, 478)

@@ -27,6 +27,7 @@ class Start(BaseScript):
         return 'start_game'
 
     def pre_start(self):
+        self.click_word('开启云垂')
         box = self.get_word_box('今日不再弹出')
         if box is not None:
             self.click_x_y(1985, 130)
@@ -75,6 +76,6 @@ class Start(BaseScript):
         return 'boon_hall'
 
 
-config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行'}
+config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行', 'type': '1', 'mac': 'xd1'}
 start = Start(config)
 start.run()
