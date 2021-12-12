@@ -170,3 +170,41 @@ class BaseScript:
     def walk_ahead(self, gap):
         for i in range(gap):
             self.d.swipe_ext('up', box=(320, 500, 320, 850))
+
+    """
+    连续点击坐标
+    :param coordinate_list,坐标元组集合
+    """
+
+    def continuous_click(self, coordinate_list):
+        for (x, y) in coordinate_list:
+            time.sleep(2)
+            self.click_x_y(x, y)
+
+    """
+    统计字的数量，精确匹配
+    :param word,需要统计的字
+    :return 字的数量
+    """
+
+    def count_word(self, word):
+        count = 0
+        result = easy_ocr(self.image_path)
+        for r in result:
+            if word in r:
+                count += 1
+        return count
+
+    """
+        统计字的数量，模糊匹配
+        :param word,需要统计的字
+        :return 字的数量
+        """
+
+    def count_like_word(self, word):
+        count = 0
+        result = easy_ocr(self.image_path)
+        for r in result:
+            if word in r[1]:
+                count += 1
+        return count
