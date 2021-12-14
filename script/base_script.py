@@ -47,7 +47,6 @@ class BaseScript:
         while True:
             self.shot_screen()
             method = getattr(self, method_name)
-            self.d.toast("当前方法：" + str(method))
             method_name = method()
             if method_name == 'end':
                 return EXIT
