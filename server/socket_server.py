@@ -57,12 +57,12 @@ class SocketServer:
 
     @staticmethod
     def do_device_list(client):
-        ips = phone_util.list_phone_ip_test()
-        ips_json = json.dumps(ips)
-        ips_json = ips_json + "\n"
-        client.send(ips_json.encode('utf-8'))
+        dev_info = phone_util.list_phone_ip_test()
+        dev_info = json.dumps(dev_info)
+        dev_info = dev_info + "\n"
+        client.send(dev_info.encode('utf-8'))
         client.close()
 
 
-socket_server = SocketServer('192.168.43.94', 8081)
+socket_server = SocketServer('192.168.31.104', 8081)
 socket_server.run()

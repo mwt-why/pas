@@ -1,5 +1,4 @@
 import uiautomator2 as u2
-import logging as log
 import cv2
 import time
 import random
@@ -48,9 +47,8 @@ class BaseScript:
         while True:
             self.shot_screen()
             method = getattr(self, method_name)
+            self.d.toast("当前方法：" + method)
             method_name = method()
-            print('current method is:' + method_name)
-            log.info('current method is:' + method_name)
             if method_name == 'end':
                 return EXIT
             time.sleep(1)
