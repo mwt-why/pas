@@ -47,6 +47,7 @@ class BaseScript:
         while True:
             self.shot_screen()
             method = getattr(self, method_name)
+            print("当前方法：", method)
             method_name = method()
             if method_name == 'end':
                 return EXIT
