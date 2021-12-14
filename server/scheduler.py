@@ -22,11 +22,12 @@ class Scheduler:
                     self.create_task(task)
 
     @staticmethod
-    def dev_is_usable(self, serial):
+    def dev_is_usable(serial):
         status = get_dev_status(serial)
         if status == 0:
             return True
         return False
 
-    def create_task(self, task):
+    @staticmethod
+    def create_task(task):
         pass
