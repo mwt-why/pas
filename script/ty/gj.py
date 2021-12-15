@@ -1,6 +1,7 @@
 from script.base_script import BaseScript
 
-#工会任务
+
+# 工会任务
 class Gj(BaseScript):
     def start(self):
         self.click_x_y(1687, 950)

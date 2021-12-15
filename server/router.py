@@ -19,3 +19,8 @@ def use_dev(serial):
 # 释放设备
 def release_dev(serial):
     return HttpUtil.put("device/" + serial)
+
+
+# 反馈信息给服务器
+def feedback(report):
+    return HttpUtil.put("task", report)

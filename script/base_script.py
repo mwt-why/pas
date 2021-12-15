@@ -1,3 +1,6 @@
+"""
+每个实际的业务脚本必须继承该类
+"""
 import uiautomator2 as u2
 import cv2
 import time

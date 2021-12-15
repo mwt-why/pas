@@ -32,11 +32,12 @@ def list_dev_info():
     return dev_info_list
 
 
-def simplify_dev_info(dev_info, dev_type):
+def simplify_dev_info(dev_info, dev_type, ip):
     return {
         "serial": dev_info["serial"],
         "brand": dev_info["brand"],
         "mac": dev_info["hwaddr"],
+        "ip": ip,
         "memory": dev_info["memory"]["total"],
         "width": dev_info["display"]["width"],
         "height": dev_info["display"]["height"],
@@ -45,5 +46,6 @@ def simplify_dev_info(dev_info, dev_type):
 
 
 def list_phone_ip_test():
-    dev_info = test_connect_wifi("192.168.31.92")
-    return [simplify_dev_info(dev_info, "physical")]
+    ip = "192.168.31.92"
+    dev_info = test_connect_wifi(ip)
+    return [simplify_dev_info(dev_info, "physical", ip)]
