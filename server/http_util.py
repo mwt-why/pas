@@ -7,34 +7,36 @@ http = urllib3.PoolManager()
 
 
 class HttpUtil:
-    __base_url__ = ""
+    base_url = ""
 
-    def __int__(self, base_url):
-        if len(base_url) != 0:
-            self.__base_url__ = base_url
-        else:
-            self.__set_base_url__()
+    def set_base_url(self):
+        env = Env()
+        url = env.get_value("manage_server.url")
+        self.base_url = url
 
-    def __set_base_url__(self):
-        url = Env.get_value("manage_server.url")
-        self.__base_url__ = url
+    def get(self, path, params=None):
+        return self.request("GET", self.base_url + "/" + path, params)
 
-    def get(self, path, params):
-        return self.__request__("GET", self.__base_url__ + "/" + path, params)
+    def post(self, path, data=None):
+        return self.request("POST", self.base_url + "/" + path, data)
 
-    def post(self, path, data):
-        return self.__request__("POST", self.__base_url__ + "/" + path, data)
-
-    def put(self, path, data):
-        return self.__request__("PUT", self.__base_url__ + "/" + path, data)
+    def put(self, path, data=None):
+        return self.request("PUT", self.base_url + "/" + path, data)
 
     @staticmethod
-    def __request__(way, url, payload):
-        resp = http.request(
-            way,
-            url,
-            fields=payload
-        )
+    def request(way, url, payload):
+        if payload:
+            resp = http.request(
+                way,
+                url,
+                body=json.dumps(payload),
+                headers={'Content-Type': 'application/json'}
+            )
+        else:
+            resp = http.request(
+                way,
+                url
+            )
         if resp.status == 200:
             result = json.loads(resp.data)
             return result["data"]

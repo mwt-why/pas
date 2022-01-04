@@ -1,6 +1,6 @@
 import yaml
 
-env_path = "../env.yaml"
+env_path = "/home/why/work/python/pas/env.yaml"
 
 
 class Env:
