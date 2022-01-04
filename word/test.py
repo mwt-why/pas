@@ -1,6 +1,6 @@
-from word.wordUtil import easy_ocr
+from wordUtil import easy_ocr
 
-path = '/home/why/dataset/cur_image/cur_image.jpg'
+path = '../images/cur_image.jpg'
 result = easy_ocr(path)
 for r in result:
     print(r)

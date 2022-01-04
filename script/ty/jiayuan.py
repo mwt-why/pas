@@ -10,7 +10,7 @@ coo_dict = {(335, 305): '0', (598, 241): '0', (850, 301): '0', (1100, 231): '0',
 #  家园
 class JY(BaseScript):
     def start(self):
-        self.click_x_y(1212, 860)
+        self.click_x_y(1094, 812)
         return 'home_select'
 
     def home_select(self):
@@ -43,21 +43,15 @@ class JY(BaseScript):
         return 'go_home'
 
     def visit(self):
+        box = self.get_like_word_box('参观纪念')
+        if box is not None:
+            self.click_x_y(1830, 135)
+            return 'exit'
         box = self.get_word_box('社区')
         if box is not None:
             self.click_box(box)
             return 'pre_go_home'
         return 'visit'
-
-    def exit(self):
-        box = self.get_word_box('参观纪念')
-        if box is not None:
-            self.click_x_y(1830, 135)
-            box = self.get_like_word_box('确定退出')
-            if box is not None:
-                box = self.get_like_word_box('确定')
-                self.click_box(box)
-                return 'exit'
 
     @staticmethod
     def get_home_coo():
@@ -66,6 +60,13 @@ class JY(BaseScript):
                 coo_dict[k] = '1'
                 return k
         return None
+
+    def exit(self):
+        box = self.get_like_word_box('确定退出')
+        if box is not None:
+            box = self.get_word_box('确定')
+            self.click_box(box)
+            return 'exit'
 
 
 config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行', 'type': '1',

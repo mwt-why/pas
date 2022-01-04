@@ -1,22 +1,14 @@
+import time
+
 from script.base_script import BaseScript
+
 
 # 升级到16
 class Grade(BaseScript):
     # 最开始
-    def start(self):
-        box = self.get_word_box('跳过')
-        if box is not None:
-            self.click_box(box)
-            return 'jump_over_tip1'
-        return 'start'
-
-# 任务追踪栏引导
-    def jump_over_tip1(self):
-        box = self.get_like_word_box('任务追踪引导')
-        if box is not None:
-            self.click_word('确定')
-            return 'window_wait'
-        return 'jump_over_tip1'
+    @staticmethod
+    def start():
+        return 'window_wait'
 
     # 窗口等待
     def window_wait(self):
@@ -26,7 +18,7 @@ class Grade(BaseScript):
             return 'answer_no_worry'
         return 'window_wait'
 
-    #回答要不要紧
+    # 回答要不要紧
     def answer_no_worry(self):
         box = self.get_like_word_box('相识的梦')
         if box is not None:
@@ -38,11 +30,11 @@ class Grade(BaseScript):
     def jump_over_tip2(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
-            self.click_word('跳过')
+            self.click_box(box)
             # 需要等待一会
-            self.click_word('跳过')
             return 'comfirm_name'
         return 'jump_over_tip2'
+        # 任务追踪栏引导
 
     # 确认姓名
     def comfirm_name(self):
@@ -64,17 +56,17 @@ class Grade(BaseScript):
     def jump_over_tip3(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
-            self.click_word('跳过')
-            return 'comfirm_jump_over_tip3'
+            self.click_box(box)
+            return 'closet'
         return 'jump_over_tip3'
 
-    # 任务追踪栏引导
-    def comfirm_jump_over_tip3(self):
-        box = self.get_like_word_box('任务追踪引导')
-        if box is not None:
-            self.click_word('确定')
-            return 'closet'
-        return 'comfirm_jump_over_tip3'
+    # # 任务追踪栏引导
+    # def comfirm_jump_over_tip3(self):
+    #     box = self.get_like_word_box('任务追踪')
+    #     if box is not None:
+    #         self.click_word('确定')
+    #         return 'closet'
+    #     return 'comfirm_jump_over_tip3'
 
     # 衣柜
     def closet(self):
@@ -97,21 +89,28 @@ class Grade(BaseScript):
         box = self.get_like_word_box('决定是你了')
         if box is not None:
             self.click_box(box)
-            self.click_like_word("装备")
-            self.click_like_word("相册")
-            return 'tianyu_photo'
+            return 'equip'
         return 'comfirm_white'
 
-#     天谕岛相册
-    def tianyu_photo(self):
-        box = self.get_like_word_box('完成')
+    def equip(self):
+        box = self.get_like_word_box('装备')
         if box is not None:
             self.click_box(box)
-            return 'choose_white'
+            self.click_word('装备')
+            return 'tianyu_photo'
+        return 'equip'
+
+    #     天谕岛相册
+    def tianyu_photo(self):
+        box = self.get_like_word_box('相册')
+        if box is not None:
+            self.click_box(box)
+            return 'getout_home'
         return 'tianyu_photo'
 
-# 离开房间
+    # 离开房间
     def getout_home(self):
+        self.click_word('完成')
         box = self.get_like_word_box('离开房间')
         if box is not None:
             self.click_box(box)
@@ -130,8 +129,10 @@ class Grade(BaseScript):
     def jump_over_tip4(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
-            self.click_word('跳过')
-            self.click_like_word('协会')
+            self.click_box(box)
+        box = self.get_like_word_box('哎')
+        if box is not None:
+            self.click_box(box)
             return 'jump_over_tip5'
         return 'jump_over_tip4'
 
@@ -139,14 +140,17 @@ class Grade(BaseScript):
     def jump_over_tip5(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
+            self.click_box(box)
             self.click_word('跳过')
             return 'fight_model'
         return 'jump_over_tip5'
 
     # 确认作战模式，2个确认
     def fight_model(self):
+        self.click_word('小初')
         box = self.get_like_word_box('确认')
-        if box is None:
+        if box:
+            self.click_box(box)
             self.click_word('确认')
             return 'go_deck'
         return 'fight_model'
@@ -171,6 +175,7 @@ class Grade(BaseScript):
     def stop_war(self):
         box = self.get_like_word_box('制止')
         self.click_like_word('单攻')
+        self.click_like_word('群攻')
         if box is not None:
             self.click_box(box)
             return 'jump_over_tip6'
@@ -178,10 +183,16 @@ class Grade(BaseScript):
 
     # 跳过
     def jump_over_tip6(self):
-        box = self.get_like_word_box('跳过')
+        self.click_word('跳过')
+        time.sleep(1)
+        self.click_word('跳过')
+        box = self.get_word_box('确定')
         if box is not None:
-            self.click_word('跳过')
-            return 'talk_nan'
+            self.click_box(box)
+            box = self.get_like_word_box('装备')
+            if box is not None:
+                self.click_box(box)
+                return 'talk_nan'
         return 'jump_over_tip6'
 
     # 南歌对话
@@ -196,16 +207,18 @@ class Grade(BaseScript):
     def jump_over_tip7(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
-            self.click_word('跳过')
-            self.click_like_word("大赢所有")
-            return 'jump_over_tip8'
+            self.click_box(box)
+        box = self.get_like_word_box('所有')
+        if box is not None:
+            self.click_box(box)
+            return 'jump_over_imp_tip'
         return 'jump_over_tip7'
 
     # 跳过
     def jump_over_tip8(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
-            self.click_word('跳过')
+            self.click_box(box)
             return 'jump_over_imp_tip'
         return 'jump_over_tip8'
 
@@ -213,21 +226,23 @@ class Grade(BaseScript):
     def jump_over_imp_tip(self):
         box = self.get_like_word_box('跳过重要剧情')
         if box is not None:
-            self.click_like_word('跳过重要剧情')
-            self.click_like_word('残忍跳过')
+            self.click_box(box)
+        box = self.get_like_word_box('残忍跳过')
+        if box is not None:
+            self.click_box(box)
             return 'say_bey_with_nan'
         return 'jump_over_imp_tip'
 
-# 与南歌告别
+    # 与南歌告别
     def say_bey_with_nan(self):
         box = self.get_like_word_box('夏颜道别')
         if box is not None:
             self.click_box(box)
-            self.click_like_word("跳过")
+            self.click_like_word('跳过')
             return 'go_to_jinbake'
         return 'say_bey_with_nan'
 
-# 鲸巴客
+    # 鲸巴客
     def go_to_jinbake(self):
         box = self.get_like_word_box('鲸巴客')
         if box is not None:
@@ -251,7 +266,7 @@ class Grade(BaseScript):
             return 'click_white_to_jump'
         return 'jump_over_main_line'
 
-# 点击空白处关闭
+    # 点击空白处关闭
     def click_white_to_jump(self):
         box = self.get_like_word_box('空白处关闭')
         if box is not None:
@@ -259,7 +274,7 @@ class Grade(BaseScript):
             return 'equip_on'
         return 'click_white_to_jump'
 
-# 装备
+    # 装备
     def equip_on(self):
         box = self.get_like_word_box('装备')
         self.click_like_word("装备")
@@ -271,13 +286,13 @@ class Grade(BaseScript):
     # 使用
     def to_use(self):
         box = self.get_like_word_box('使用')
-        self.click_like_word("使用")
+        self.click_like_word('使用')
         if box is None:
             self.click_box(box)
             return 'open_cloud_and_sea'
         return 'to_use'
 
-#     开区云与海
+    #     开区云与海
     def open_cloud_and_sea(self):
         box = self.get_like_word_box('开启')
         if box is None:
@@ -285,7 +300,7 @@ class Grade(BaseScript):
             return 'cloud_and_sea'
         return 'open_cloud_and_sea'
 
-# 云与海的故事
+    # 云与海的故事
     def cloud_and_sea(self):
         box = self.get_like_word_box('云与海')
         if box is not None:
@@ -298,10 +313,10 @@ class Grade(BaseScript):
         box = self.get_like_word_box('跳过')
         if box is not None:
             self.click_box(box)
-            return 'jump_over_main_line'
+            return 'cloud_and_sea2'
         return 'jump_over_tip10'
 
-# 云与海的故事
+    # 云与海的故事
     def cloud_and_sea2(self):
         box = self.get_like_word_box('云与海')
         self.click_like_word("云与海")
@@ -310,114 +325,116 @@ class Grade(BaseScript):
             return 'see_yuan'
         return 'cloud_and_sea2'
 
-# 见到元裘了么
+    # 见到元裘了么
     def see_yuan(self):
         box = self.get_like_word_box('见到元裘')
         if box is not None:
             self.click_box(box)
-            self.click_like_word("工牌")
-            self.click_like_word("没问题")
+            self.click_like_word('工牌')
+            self.click_like_word('没问题')
 
             return 'cloud_and_sea3'
         return 'see_yuan'
 
-# 云与海的故事
+    # 云与海的故事
     def cloud_and_sea3(self):
-        box = self.get_like_word_box('云与海')
-        self.click_like_word("云与海")
+        self.click_like_word('云与海')
+        box = self.get_like_word_box('烹饪')
         if box is None:
             # self.click_box(box)
-            return 'jump_over_tip11'
+            return 'self_cook'
         return 'cloud_and_sea3'
 
-    # 跳过
-    def jump_over_tip11(self):
-        box = self.get_like_word_box('跳过')
-        if box is not None:
-            self.click_box(box)
-            return 'i_so_in_love'
-        return 'jump_over_tip11'
+    # # 跳过
+    # def jump_over_tip11(self):
+    #     box = self.get_like_word_box('跳过')
+    #     if box is not None:
+    #         self.click_box(box)
+    #         return 'i_so_in_love'
+    #     return 'jump_over_tip11'
 
-    # 我很喜欢
-    def i_so_in_love(self):
-        box = self.get_like_word_box('我很喜欢')
-        if box is not None:
-            self.click_box(box)
-            return 'jump_over_tip12'
-        return 'i_so_in_love'
-
-    # 跳过
-    def jump_over_tip12(self):
-        box = self.get_like_word_box('跳过')
-        if box is not None:
-            self.click_box(box)
-            return 'cloud_and_sea4'
-        return 'jump_over_tip12'
-
-# 云与海的故事
-    def cloud_and_sea4(self):
-        box = self.get_like_word_box('云与海')
-        self.click_like_word("云与海")
-        if box is None:
-            # self.click_box(box)
-            return 'jump_over_tip13'
-        return 'cloud_and_sea4'
+    # # 我很喜欢
+    # def i_so_in_love(self):
+    #     box = self.get_like_word_box('我很喜欢')
+    #     if box is not None:
+    #         self.click_box(box)
+    #         return 'jump_over_tip12'
+    #     return 'i_so_in_love'
 
     # 跳过
-    def jump_over_tip13(self):
-        box = self.get_like_word_box('跳过')
-        if box is not None:
-            self.click_box(box)
-            return 'cloud_and_sea4'
-        return 'jump_over_tip13'
+    # def jump_over_tip12(self):
+    #     box = self.get_like_word_box('跳过')
+    #     if box is not None:
+    #         self.click_box(box)
+    #         return 'cloud_and_sea4'
+    #     return 'jump_over_tip12'
+    #
+    #
+    # # 云与海的故事
+    # def cloud_and_sea4(self):
+    #     box = self.get_like_word_box('云与海')
+    #     self.click_like_word("云与海")
+    #     if box is None:
+    #         # self.click_box(box)
+    #         return 'self_cook'
+    #     return 'cloud_and_sea4'
+
+    # 跳过
+    # def jump_over_tip13(self):
+    #     box = self.get_like_word_box('跳过')
+    #     if box is not None:
+    #         self.click_box(box)
+    #         return 'cloud_and_sea4'
+    #     return 'jump_over_tip13'
 
     # 帮忙准备
-    def jump_over_tip13(self):
-        box = self.get_like_word_box('帮忙准备')
-        if box is not None:
-            self.click_box(box)
-            return 'cloud_and_sea4'
-        return 'jump_over_tip13'
+    # def jump_over_tip13(self):
+    #     box = self.get_like_word_box('帮忙准备')
+    #     if box is not None:
+    #         self.click_box(box)
+    #         return 'cloud_and_sea4'
+    #     return 'jump_over_tip13'
 
-# 云与海的故事
-    def cloud_and_sea5(self):
-        box = self.get_like_word_box('云与海')
-        self.click_like_word("云与海")
-        if box is None:
-            # self.click_box(box)
-            return 'jump_over_tip13'
-        return 'cloud_and_sea5'
+    # 云与海的故事
+    # def cloud_and_sea5(self):
+    #     box = self.get_like_word_box('云与海')
+    #     self.click_like_word("云与海")
+    #     if box is None:
+    #         # self.click_box(box)
+    #         return 'jump_over_tip13'
+    #     return 'cloud_and_sea5'
 
     # 自由创作
     # TODO 需要点击图片
     def self_cook(self):
         box = self.get_like_word_box('烹饪')
         if box is not None:
-            self.click_x_y(self, 1790, 355)
-            self.click_x_y(self, 350, 265)
-            self.click_x_y(self, 500, 260)
-            self.click_x_y(self, 190, 410)
-            self.click_x_y(self, 500, 385)
+            self.click_x_y(1790, 355)
+            self.click_x_y(350, 265)
+            self.click_x_y(500, 260)
+            self.click_x_y(190, 410)
+            self.click_x_y(500, 385)
+            self.click_x_y(350, 385)
             self.click_box(box)
             return 'cloud_and_sea6'
         return 'self_cook'
 
     # 云与海的故事
     def cloud_and_sea6(self):
+        self.click_like_word('云与海')
         box = self.get_like_word_box('云与海')
-        self.click_like_word("云与海")
         if box is None:
             # self.click_box(box)
-            return 'jump_over_tip14'
+            return 'comp_organize'
         return 'cloud_and_sea6'
 
-    # 跳过
-    def jump_over_tip14(self):
-        box = self.get_like_word_box('跳过')
-        if box is not None:
-            self.click_box(box)
-            return 'comp_organize'
-        return 'jump_over_tip14'
+    # # 跳过
+    # def jump_over_tip14(self):
+    #     box = self.get_like_word_box('跳过')
+    #     if box is not None:
+    #         self.click_box(box)
+    #         return 'comp_organize'
+    #     return 'jump_over_tip14'
 
     # 竞争组织
     def comp_organize(self):
@@ -443,13 +460,13 @@ class Grade(BaseScript):
             return 'jump_over_tip16'
         return 'liu_xing'
 
-    # 跳过
-    def jump_over_tip16(self):
-        box = self.get_like_word_box('跳过')
-        if box is not None:
-            self.click_box(box)
-            return 'chage_loop'
-        return 'jump_over_tip16'
+    # # 跳过
+    # def jump_over_tip16(self):
+    #     box = self.get_like_word_box('跳过')
+    #     if box is not None:
+    #         self.click_box(box)
+    #         return 'chage_loop'
+    #     return 'jump_over_tip16'
 
     # 改变星轨
     def chage_loop(self):
@@ -466,7 +483,6 @@ class Grade(BaseScript):
             self.click_box(box)
             return 'jump_over_tip16'
         return 'realy_can'
-
 
     # TODO
     # 需要画画
@@ -486,7 +502,7 @@ class Grade(BaseScript):
             return 'sky_fish'
         return 'cloud_and_sea7'
 
-# 天上烤鱼
+    # 天上烤鱼
     def sky_fish(self):
         box = self.get_like_word_box('天上烤鱼')
         if box is not None:
@@ -502,7 +518,7 @@ class Grade(BaseScript):
             return 'like_simple_life'
         return 'jump_over_tip17'
 
-# 想要闲适生活
+    # 想要闲适生活
     def like_simple_life(self):
         box = self.get_like_word_box('想要闲适')
         if box is not None:
@@ -568,7 +584,7 @@ class Grade(BaseScript):
             return 'has_done2'
         return 'cloud_and_sea9'
 
-# 完成
+    # 完成
     def has_done2(self):
         box = self.get_like_word_box('完成')
         if box is not None:
@@ -593,7 +609,7 @@ class Grade(BaseScript):
             return 'some_thing_to_use'
         return 'cloud_and_sea10'
 
-# 使用
+    # 使用
     def some_thing_to_use(self):
         box = self.get_like_word_box('使用')
         self.click_like_word("使用")
@@ -615,18 +631,18 @@ class Grade(BaseScript):
         box = self.get_like_word_box('跳过')
         if box is not None:
             self.click_box(box)
-            self.click_x_y(self,2117,630)
+            self.click_x_y(self, 2117, 630)
             return 'the_sky_wind3'
         return 'jump_over_tip22'
 
-# 完成引导任务
+    # 完成引导任务
     def the_sky_wind3(self):
         box = self.get_like_word_box('凌空之翼')
         self.click_like_word('凌空之翼')
         if box is None:
             # self.click_box(box)
             # 点击关闭
-            self.click_x_y(self,2130,190)
+            self.click_x_y(self, 2130, 190)
             return 'the_sky_wind4'
         return 'the_sky_wind3'
 
@@ -649,7 +665,7 @@ class Grade(BaseScript):
             return 'jump_over_tip23'
         return 'finish_15_step'
 
-# 跳过
+    # 跳过
     def jump_over_tip23(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
@@ -666,13 +682,13 @@ class Grade(BaseScript):
             self.click_like_word("装备")
             self.click_like_word("使用")
             # 返回
-            self.click_x_y(self,180,66)
+            self.click_x_y(self, 180, 66)
             self.click_like_word("完成")
             self.click_like_word("跳过")
             return 'nothing_to_sister'
         return 'sister_question'
 
-# 不麻烦师姐
+    # 不麻烦师姐
     def nothing_to_sister(self):
         box = self.get_like_word_box('麻烦师姐')
         if box is not None:
@@ -683,7 +699,7 @@ class Grade(BaseScript):
             return 'college_main_thing'
         return 'nothing_to_sister'
 
-  # 学院课程
+    # 学院课程
     def college_main_thing(self):
         box = self.get_like_word_box('学院课程')
         if box is not None:
@@ -691,7 +707,7 @@ class Grade(BaseScript):
             return 'jump_over_tip24'
         return 'college_main_thing'
 
-# 跳过
+    # 跳过
     def jump_over_tip24(self):
         box = self.get_like_word_box('跳过')
         if box is not None:
@@ -707,7 +723,7 @@ class Grade(BaseScript):
             return 'give_them_to_me'
         return 'say_why'
 
-# 交给我吧
+    # 交给我吧
     def give_them_to_me(self):
         box = self.get_like_word_box('交给我吧')
         if box is not None:
@@ -768,7 +784,7 @@ class Grade(BaseScript):
             return 'listen_yang_class'
         return 'work_hard'
 
-# 介绍学院教程
+    # 介绍学院教程
     def listen_yang_class(self):
         box = self.get_like_word_box('介绍学院教程')
         if box is not None:
@@ -786,8 +802,7 @@ class Grade(BaseScript):
         return 'bai_give_to_me'
 
 
-
-
-config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行'}
+config = {'id': '0', 'ip': '192.168.31.184', 'role_name': '徐离珊', 'task': 'rc', 'area': '长歌行', 'type': '1',
+          'mac': 'fdsafa'}
 fb = Grade(config)
 fb.run()
