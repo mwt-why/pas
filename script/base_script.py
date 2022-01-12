@@ -45,6 +45,13 @@ class BaseScript:
         img_type = self.cur_env.get_value('image.img_type')
         self.image_path = image_dir + mac + "." + img_type
 
+    """
+    留给子类实现
+    """
+
+    def start(self):
+        pass
+
     def run(self):
         method_name = self.start()
         while True:
@@ -54,11 +61,22 @@ class BaseScript:
             method_name = method()
             if method_name == 'end':
                 return EXIT
-            time.sleep(1)
 
-    def shot_screen(self):
+    """
+    使用uiautomator2工具自带的api截屏
+    """
+
+    def shot_screen0(self):
         image = self.d.screenshot(format='opencv')
         cv2.imwrite(self.image_path, image)
+
+    """
+    借助adb截屏
+    """
+
+    def shot_screen(self):
+        self.d.shell("screencap /sdcard/screen.png")
+        self.d.pull("/sdcard/screen.png", self.image_path)
 
     """
     获取指定具体文字的坐标

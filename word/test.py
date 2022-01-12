@@ -1,6 +1,6 @@
 from wordUtil import easy_ocr
 
-path = '../images/cur_image.jpg'
+path = '../images/936X1XHD9.png'
 result = easy_ocr(path)
 for r in result:
     print(r)

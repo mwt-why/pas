@@ -1,8 +1,25 @@
 import uiautomator2 as u2
-import cv2
 
-image_path = '../images/cur_image.jpg'
+image_dir = '../images/'
 
-d = u2.connect_wifi('192.168.31.184')
-image = d.screenshot(format='opencv')
-cv2.imwrite(image_path, image)
+
+def shot_image(serial):
+    d = u2.connect(serial)
+    d.shell("screencap /sdcard/screen.png")
+    d.pull("/sdcard/screen.png", image_dir + serial + ".png")
+
+
+def input_word():
+    d = u2.connect("936X1XHD9")
+    d.set_clipboard("hello world")
+    d.clipboard
+    d.click(1048, 488)
+
+
+# shot_image("emulator-5554")
+# d = u2.connect("emulator-5554")
+# d.app_start("com.netease.pm02")
+d1 = u2.connect_wifi("192.168.31.82")
+# d1 = u2.connect_adb_wifi("192.168.42.236:5555")
+# d1 = u2.connect()
+print(d1.info)

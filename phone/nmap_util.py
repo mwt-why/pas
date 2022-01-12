@@ -35,9 +35,3 @@ def scan_device_ip():
         else:
             print(ip, '->down')
     return devices
-
-
-if __name__ == '__main__':
-    device_list = scan_device_ip()
-    for d in device_list:
-        print(d)

@@ -7,7 +7,7 @@ class TY(BaseEnter):
 
     def execute(self, task):
         self.task = task
-        # start = Start()
-        # start.run()
+        start = Start()
+        start.run()
         script_name = self.task['scriptName']
         print('i am ' + script_name)

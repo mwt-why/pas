@@ -13,10 +13,9 @@ class BaseEnter:
         self.serial = serial
         task = self.prepare(serial)
         if task is None:
-            self.router.release_dev(serial)
             return
         self.execute(task)
-        # self.end()
+        self.end()
 
     """
     开始之前的准备工作

@@ -26,6 +26,18 @@ class Router:
     def release_dev(self, serial):
         return self.http_util.put("device/" + serial)
 
+    # 释放账号
+    def release_account(self, account):
+        return self.http_util.put("account/" + account)
+
     # 反馈信息给服务器
     def feedback(self, report):
         return self.http_util.put("feedback", report)
+
+    # 获取除自己以外的账号
+    def list_role_except_me(self, params):
+        return self.http_util.get("role", params)
+
+    # 给账号添加角色
+    def add_role(self, params):
+        return self.http_util.put("role", params)
