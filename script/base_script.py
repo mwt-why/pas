@@ -40,10 +40,10 @@ class BaseScript:
             self.d = u2.connect_wifi(ip)
 
     def init_image_path(self, task_data):
-        mac = task_data['mac']
+        id = task_data['id']
         image_dir = self.cur_env.get_value('image.dir')
         img_type = self.cur_env.get_value('image.img_type')
-        self.image_path = image_dir + mac + "." + img_type
+        self.image_path = image_dir + id + "." + img_type
 
     """
     留给子类实现

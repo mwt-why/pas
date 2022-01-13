@@ -92,9 +92,3 @@ class Start(BaseScript):
         if box:
             return True
         return False
-
-
-config = {'id': '0', 'ip': '192.168.31.92', 'role_name': '一世忆南',
-          'task': 'rc', 'area': '长歌行', 'type': '1', 'mac': 'xd1', 'serial': '936X1XHD9'}
-start = Start(config)
-start.run()

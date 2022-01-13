@@ -1,0 +1,25 @@
+{
+  'currentPackageName': 'com.github.uiautomator',
+  'displayHeight': 1560,
+  'displayRotation': 0,
+  'displaySizeDpX': 411,
+  'displaySizeDpY': 937,
+  'displayWidth': 720,
+  'productName': 'Punisher_00CN',
+  'screenOn': True,
+  'sdkInt': 30,
+  'naturalOrientation': True
+}
+
+{
+  'currentPackageName': 'com.github.uiautomator',
+  'displayHeight': 2028,
+  'displayRotation': 0,
+  'displaySizeDpX': 393,
+  'displaySizeDpY': 785,
+  'displayWidth': 1080,
+  'productName': 'blueline',
+  'screenOn': True,
+  'sdkInt': 30,
+  'naturalOrientation': True
+}
