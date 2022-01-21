@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 
 
@@ -33,8 +34,5 @@ def get_account():
     account = acc_list.pop()
     with open(path, "w") as w:
         for acc in acc_list:
-            w.write(acc[0] + ":" + acc[1])
+            w.write(acc[0] + ":" + acc[1] + "\n")
     return account
-
-
-

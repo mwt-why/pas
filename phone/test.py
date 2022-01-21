@@ -1,25 +1,9 @@
 import uiautomator2 as u2
+import time
 
-image_dir = '../images/'
-
-
-def shot_image(serial):
-    d = u2.connect(serial)
-    d.shell("screencap /sdcard/screen.png")
-    d.pull("/sdcard/screen.png", image_dir + serial + ".png")
-
-
-def input_word():
-    d = u2.connect("936X1XHD9")
-    d.set_clipboard("hello world")
-    d.clipboard
-    d.click(1048, 488)
-
-
-# shot_image("emulator-5554")
-# d = u2.connect("emulator-5554")
-# d.app_start("com.netease.pm02")
-d1 = u2.connect_wifi("192.168.31.92")
-# d1 = u2.connect_adb_wifi("192.168.42.236:5555")
-# d1 = u2.connect("192.168.31.7")
-print(d1.info)
+d = u2.connect_wifi("192.168.31.7")
+d.set_clipboard("32454324")
+d.clipboard
+d.click(1080, 393)
+time.sleep(1)
+d.long_click(1080, 393, 2)

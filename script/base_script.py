@@ -5,11 +5,10 @@ import uiautomator2 as u2
 import cv2
 import time
 import random
-
-from word.wordUtil import easy_ocr
 from env.env import Env
+from photo.match_image import match
 
-EXIT = 0
+EXIT = 1
 
 
 class BaseScript:
@@ -19,12 +18,16 @@ class BaseScript:
     state = 0  # 0:未进入游戏，１:游戏中，2:游戏结束
     pre_enter_count = 0
     cur_env = None
+    request_q = None
+    receive_q = None
 
     def __init__(self, task_data):
         self.init_env()
         self.task_data = task_data
         self.connect(task_data)
         self.init_image_path(task_data)
+        self.request_q = task_data['request_q']
+        self.receive_q = task_data['receive_q']
 
     def init_env(self):
         self.cur_env = Env()
@@ -45,6 +48,14 @@ class BaseScript:
         img_type = self.cur_env.get_value('image.img_type')
         self.image_path = image_dir + id + "." + img_type
 
+    def ocr(self, image_path):
+        self.request_q.put(image_path, block=True)
+        while True:
+            if self.receive_q.empty():
+                time.sleep(0.5)
+                continue
+            return self.receive_q.get()
+
     """
     留给子类实现
     """
@@ -52,13 +63,17 @@ class BaseScript:
     def start(self):
         pass
 
+    def always(self):
+        pass
+
     def run(self):
         method_name = self.start()
         while True:
             self.shot_screen()
             method = getattr(self, method_name)
-            print("当前方法：", method)
+            print("当前方法：", method_name)
             method_name = method()
+            self.always()
             if method_name == 'end':
                 return EXIT
 
@@ -78,6 +93,10 @@ class BaseScript:
         self.d.shell("screencap /sdcard/screen.png")
         self.d.pull("/sdcard/screen.png", self.image_path)
 
+    @staticmethod
+    def drop_space(s):
+        return s.replace(" ", "")
+
     """
     获取指定具体文字的坐标
     :param word,需要获取坐标的文字
@@ -87,9 +106,10 @@ class BaseScript:
 
     def get_word_box(self, word, index=1):
         count = 1
-        result = easy_ocr(self.image_path)
+        result = self.ocr(self.image_path)
         for r in result:
-            if word in r:
+            s = self.drop_space(r[1])
+            if word == s:
                 if count == index:
                     print(word, r[0])
                     return r[0]
@@ -152,7 +172,7 @@ class BaseScript:
     """
 
     def contain_words(self, word_list):
-        result = easy_ocr(self.image_path)
+        result = self.ocr(self.image_path)
         for r in result:
             for w in word_list:
                 if w in r:
@@ -165,9 +185,10 @@ class BaseScript:
     """
 
     def get_like_word_box(self, word):
-        result = easy_ocr(self.image_path)
+        result = self.ocr(self.image_path)
         for r in result:
-            if word in r[1]:
+            s = self.drop_space(r[1])
+            if word in s:
                 return r[0]
         return None
 
@@ -208,7 +229,7 @@ class BaseScript:
 
     def count_word(self, word):
         count = 0
-        result = easy_ocr(self.image_path)
+        result = self.ocr(self.image_path)
         for r in result:
             if word in r:
                 count += 1
@@ -222,8 +243,75 @@ class BaseScript:
 
     def count_like_word(self, word):
         count = 0
-        result = easy_ocr(self.image_path)
+        result = self.ocr(self.image_path)
         for r in result:
             if word in r[1]:
                 count += 1
         return count
+
+    """
+    图片对象检测
+    :param target,被检测对象路径
+    :return 图片相似度，和图片坐标
+    """
+
+    def match_image0(self, img):
+        return match(self.image_path, img)
+
+    """
+    图片对象检测
+    :param target,被检测对象路径
+    :return 图片坐标
+    """
+
+    def match_image(self, img):
+        result = self.match_image0(img)
+        if result:
+            return result['point'][0], result['point'][1]
+
+    """
+    图片对象点击
+    :param target,被点击图片的路径
+    """
+
+    def click_image(self, img):
+        x, y = self.match_image(img)
+        self.d.click(x, y)
+
+    """
+    获取指定文字的下一个被识别的文字的box
+    :param 当前的文字
+    :return 下一个文字的box
+    """
+
+    def get_like_word_next_content(self, word):
+        result = self.ocr(self.image_path)
+        flag = False
+        for r in result:
+            if flag:
+                return r
+            if word in r[1]:
+                flag = True
+        return None
+
+    """
+    :param sort,获取内容的顺序，０正序，１反序
+    :param offset,开始位置
+    :param c,获取的内容条数
+    """
+
+    def get_content(self, sort=0, offset=0, c=1):
+        content = []
+        result = self.ocr(self.image_path)
+        if sort:
+            result = reversed(result)
+        index = 0
+        for r in result:
+            if len(content) >= c:
+                break
+            if index < offset:
+                index = index + 1
+                continue
+            content.append(r)
+            index = index + 1
+        return content
