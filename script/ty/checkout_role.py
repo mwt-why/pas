@@ -2,9 +2,14 @@ import time
 
 from script.base_script import BaseScript
 from script.ty.const import SURE
+from script.ty.pre_start import PreStart
 
 
 class CheckoutRole(BaseScript):
+
+    # 如果出现卡死就去执行首页的弹框检测
+    def stuck_handle(self):
+        PreStart(self.task_data).run()
 
     def start(self):
         self.click_x_y(2075, 335)  # 点击菜单
@@ -28,50 +33,45 @@ class CheckoutRole(BaseScript):
         return "click_sure"
 
     def role_pag(self):
-        content = self.get_content(1, 3, 5)
-        roles = self.get_roles(content)
         enter = self.task_data["enter"]
-        for r in roles:
-            if r[1] not in enter.done_role:
-                self.click_box(r[0])
-                enter.cur_role = r[1]
-                enter.done_role.append(r[1])
-                break
+        if enter.roles is not None:
+            self.select_role()
+            return "start_yc"
+        content = self.get_content(c=5)
+        roles = self.get_roles(content)
+        print(roles)
+        self.set_roles(roles)
+        self.select_role()
         return "start_yc"
+
+    def select_role(self):
+        enter = self.task_data["enter"]
+        role_info = enter.roles[enter.role_index]
+        self.click_box(role_info[0])
+        enter.role_index = enter.role_index + 1  # 角色下标加1
+
+    def set_roles(self, roles):
+        enter = self.task_data["enter"]
+        enter.roles = roles
+
+    def get_roles(self, content):
+        roles = []
+        for c in content:
+            if c[1] == "删除角色":
+                break
+            if "LV" not in c[1] and "Lv" not in c[1]:
+                roles.append(c)
+        self.task_data["roleNum"] = len(roles)
+        return roles
 
     def start_yc(self):
         box = self.get_like_word_box("开启云垂")
         if box:
             self.click_box(box)
-            return "end"
+            return "pre_start"
         return "start_yc"
 
-    # ----------------以上结束-------------------------------------
-    def mian_page(self):
-        self.click_like_word("稍后")
-        self.click_like_word("取消")
-        box = self.get_like_word_box("前去找回")
-        if box:
-            self.click_x_y(1654, 300)
-        box = self.get_like_word_box("我知道了")
-        if box:
-            self.click_x_y(1654, 300)
-        if self.check_main_page():
-            return "end"
-        return "mian_page"
-
-    @staticmethod
-    def get_roles(content):
-        roles = []
-        for c in content:
-            if "LV" not in c[1]:
-                roles.append(c)
-        return roles
-
-    def check_main_page(self):
-        self.click_x_y(72, 802)
+    def pre_start(self):
+        PreStart(self.task_data).run()
         time.sleep(3)
-        box = self.get_like_word_box('自动')
-        if box:
-            return True
-        return False
+        return "end"

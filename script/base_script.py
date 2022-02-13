@@ -8,7 +8,14 @@ import random
 from env.env import Env
 from photo.match_image import match
 
+# 退出
 EXIT = 1
+# 重新开始
+RESTART = 2
+# 账号异常
+ACCOUNT_EXCEPTION = 3
+# 方法最大循环次数
+METHOD_LOOP_MAX = 40
 
 
 class BaseScript:
@@ -20,6 +27,10 @@ class BaseScript:
     cur_env = None
     request_q = None
     receive_q = None
+    is_new = False  # 是否是新的orc结果
+    ocr_result_cache = []  # ocr结果缓存
+    cur_method_count = 0
+    cur_method = "start"
 
     def __init__(self, task_data):
         self.init_env()
@@ -48,19 +59,24 @@ class BaseScript:
         img_type = self.cur_env.get_value('image.img_type')
         self.image_path = image_dir + id + "." + img_type
 
-    def ocr(self, image_path):
-        self.request_q.put(image_path, block=True)
+    def ocr(self, path=None):
+        if self.is_new:
+            return self.ocr_result_cache
+        if path is None:
+            path = self.image_path
+        self.request_q.put(path, block=True)
         while True:
             if self.receive_q.empty():
                 time.sleep(0.5)
                 continue
-            return self.receive_q.get()
-
-    """
-    留给子类实现
-    """
+            self.is_new = True
+            self.ocr_result_cache = self.receive_q.get()
+            return self.ocr_result_cache
 
     def start(self):
+        """
+           留给子类实现
+        """
         pass
 
     def always(self):
@@ -73,40 +89,77 @@ class BaseScript:
             method = getattr(self, method_name)
             print("当前方法：", method_name)
             method_name = method()
-            self.always()
-            if method_name == 'end':
+            result = self.always()
+            if result is EXIT:
+                time.sleep(3)
                 return EXIT
+            elif result is RESTART:
+                return self.start()
+            if method_name == 'end':
+                time.sleep(3)
+                return EXIT
+            elif method_name == "account_exception":
+                return ACCOUNT_EXCEPTION
+            time.sleep(1)
+            self.is_new = False
+            if self.check_method(method_name):
+                self.start()
 
-    """
-    使用uiautomator2工具自带的api截屏
-    """
+    def check_method(self, new_method):
+        """
+        方法检测，主要解决卡死后的处理
+        :param new_method:
+        :return:
+        """
+        flag = 0
+        if new_method == self.cur_method:
+            self.cur_method_count = self.cur_method_count + 1
+        else:
+            self.cur_method_count = 0
+            self.cur_method = new_method
+        if self.cur_method_count > METHOD_LOOP_MAX:
+            print("启用卡死检测方法")
+            self.stuck_handle()
+            self.cur_method_count = 0
+            flag = 1
+        return flag
 
-    def shot_screen0(self):
+    def stuck_handle(self):
+        """
+        卡死处理方法，子脚本可自己实现
+        :return:
+        """
+        pass
+
+    def shot_screen(self):
+        """
+            使用uiautomator2工具自带的api截屏
+        """
         image = self.d.screenshot(format='opencv')
         cv2.imwrite(self.image_path, image)
 
-    """
-    借助adb截屏
-    """
-
-    def shot_screen(self):
+    def shot_screen0(self, path=None):
+        """
+        借助adb截屏
+        """
         self.d.shell("screencap /sdcard/screen.png")
-        self.d.pull("/sdcard/screen.png", self.image_path)
+        if path is None:
+            path = self.image_path
+        self.d.pull("/sdcard/screen.png", path)
 
     @staticmethod
     def drop_space(s):
         return s.replace(" ", "")
 
-    """
-    获取指定具体文字的坐标
-    :param word,需要获取坐标的文字
-    :param index,如果有多个word匹配上,index表示需要顺序,默认是第一个
-    :return box,文字的坐标
-    """
-
     def get_word_box(self, word, index=1):
+        """
+            获取指定具体文字的坐标
+            :param word,需要获取坐标的文字
+            :param index,如果有多个word匹配上,index表示需要顺序,默认是第一个
+            :return box,文字的坐标
+        """
         count = 1
-        result = self.ocr(self.image_path)
+        result = self.ocr()
         for r in result:
             s = self.drop_space(r[1])
             if word == s:
@@ -116,12 +169,11 @@ class BaseScript:
                 count += 1
         return None
 
-    """
-    随机点坐标内的点
-    :param box,坐标
-    """
-
     def click_box(self, box):
+        """
+        随机点坐标内的点
+        :param box,坐标
+        """
         x = box[2][0] - box[0][0]
         y = box[2][1] - box[0][1]
         rx = random.randint(0, x)
@@ -130,33 +182,30 @@ class BaseScript:
         y = box[0][1] + ry
         self.d.click(int(x), int(y))
 
-    """
-    点击指定的坐标点
-    :param x,表示点击坐标的x
-    :param y,表示点击坐标的y
-    """
-
     def click_x_y(self, x, y):
+        """
+        点击指定的坐标点
+        :param x,表示点击坐标的x
+        :param y,表示点击坐标的y
+        """
         self.d.click(x, y)
 
-    """
-    直接点击中匹配上的文字
-    :param word,想要点击的文字
-    :param index,下表,从1开始
-    """
-
     def click_word(self, word, index=1):
+        """
+        直接点击中匹配上的文字
+        :param word,想要点击的文字
+        :param index,下表,从1开始
+        """
         box = self.get_word_box(word, index)
         if box is not None:
             self.click_box(box)
 
-    """
-    想要点击多个word，如果匹配上就直接点击
-    :param words,想要点击的文字集合
-    """
-
-    def click_word_list(self, words):
-        result = self.contain_words(words)
+    def click_word_list(self, words, like=False):
+        """
+        想要点击多个word，如果匹配上就直接点击
+        :param words,想要点击的文字集合
+        """
+        result = self.contain_words(words, like=like)
         if result is not None:
             box = result[0]
             self.click_box(box)
@@ -164,128 +213,124 @@ class BaseScript:
         else:
             return None
 
-    """
-    判断屏幕中是否包含，想要的文字的其中一个
-    例如：['i','am','boy']，如果当前屏幕匹配上am，返回匹配结果
-    :param word_list,想要匹配的文字集合
-    :return 这是orc返回结果，注意不是box
-    """
-
-    def contain_words(self, word_list):
-        result = self.ocr(self.image_path)
+    def contain_words(self, word_list, like=False):
+        """
+        判断屏幕中是否包含，想要的文字的其中一个
+        例如：['i','am','boy']，如果当前屏幕匹配上am，返回匹配结果
+        :param word_list,想要匹配的文字集合
+        :param like,是否采用模糊匹配,默认不采用
+        :return 这是orc返回结果，注意不是box
+        """
+        result = self.ocr()
         for r in result:
             for w in word_list:
-                if w in r:
-                    return r
+                if like:
+                    if w in r:
+                        return r
+                else:
+                    a = r[1]
+                    a = self.drop_space(a)
+                    if w in a:
+                        return r[0]
         return None
 
-    """
-    :param word,模糊匹配获取指定文字的坐标
-    :return 文字box
-    """
-
     def get_like_word_box(self, word):
-        result = self.ocr(self.image_path)
+        """
+        :param word,模糊匹配获取指定文字的坐标
+        :return 文字box
+        """
+        result = self.ocr()
         for r in result:
             s = self.drop_space(r[1])
             if word in s:
                 return r[0]
         return None
 
-    """
-    直接点击模糊匹配上的文字
-    :param word,指定的文字
-    """
-
     def click_like_word(self, word):
+        """
+        直接点击模糊匹配上的文字
+        :param word,指定的文字
+        """
         box = self.get_like_word_box(word)
         if box:
             self.click_box(box)
 
-    """
-    向前位移
-    :param gap,位移步长
-    """
-
     def walk_ahead(self, gap):
+        """
+        向前位移
+        :param gap,位移步长
+        """
         for i in range(gap):
             self.d.swipe_ext('up', box=(320, 500, 320, 850))
 
-    """
-    连续点击坐标
-    :param coordinate_list,坐标元组集合
-    """
-
     def continuous_click(self, coordinate_list):
+        """
+        连续点击坐标
+        :param coordinate_list,坐标元组集合
+        """
         for (x, y) in coordinate_list:
             time.sleep(2)
             self.click_x_y(x, y)
 
-    """
-    统计字的数量，精确匹配
-    :param word,需要统计的字
-    :return 字的数量
-    """
-
     def count_word(self, word):
+        """
+        统计字的数量，精确匹配
+        :param word,需要统计的字
+        :return 字的数量
+        """
         count = 0
-        result = self.ocr(self.image_path)
+        result = self.ocr()
         for r in result:
             if word in r:
                 count += 1
         return count
 
-    """
-        统计字的数量，模糊匹配
-        :param word,需要统计的字
-        :return 字的数量
-        """
-
     def count_like_word(self, word):
+        """
+            统计字的数量，模糊匹配
+            :param word,需要统计的字
+            :return 字的数量
+        """
         count = 0
-        result = self.ocr(self.image_path)
+        result = self.ocr()
         for r in result:
             if word in r[1]:
                 count += 1
         return count
 
-    """
-    图片对象检测
-    :param target,被检测对象路径
-    :return 图片相似度，和图片坐标
-    """
-
     def match_image0(self, img):
+        """
+        图片对象检测
+        :param img,被检测对象路径
+        :return 图片相似度，和图片坐标
+        """
         return match(self.image_path, img)
 
-    """
-    图片对象检测
-    :param target,被检测对象路径
-    :return 图片坐标
-    """
-
     def match_image(self, img):
+        """
+        图片对象检测
+        :param img,被检测对象路径
+        :return 图片坐标
+        """
         result = self.match_image0(img)
         if result:
             return result['point'][0], result['point'][1]
 
-    """
-    图片对象点击
-    :param target,被点击图片的路径
-    """
-
     def click_image(self, img):
+        """
+        图片对象点击
+        :param img,被点击图片的路径
+        """
         x, y = self.match_image(img)
         self.d.click(x, y)
 
-    """
-    获取指定文字的下一个被识别的文字的box
-    :param 当前的文字
-    :return 下一个文字的box
-    """
-
     def get_like_word_next_content(self, word):
-        result = self.ocr(self.image_path)
+        """
+        获取指定文字的下一个被识别的文字的box
+        :param 当前的文字
+        :return 下一个文字的box
+        """
+        result = self.ocr()
         flag = False
         for r in result:
             if flag:
@@ -294,15 +339,14 @@ class BaseScript:
                 flag = True
         return None
 
-    """
-    :param sort,获取内容的顺序，０正序，１反序
-    :param offset,开始位置
-    :param c,获取的内容条数
-    """
-
     def get_content(self, sort=0, offset=0, c=1):
+        """
+        :param sort,获取内容的顺序，０正序，１反序
+        :param offset,开始位置
+        :param c,获取的内容条数
+        """
         content = []
-        result = self.ocr(self.image_path)
+        result = self.ocr()
         if sort:
             result = reversed(result)
         index = 0

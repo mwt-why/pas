@@ -56,7 +56,6 @@ class LocalTask(object):
             if request_q.empty():
                 time.sleep(0.5)
                 continue
-            print("ocr处理中............")
             request = request_q.get()
             result = reader.readtext(request)
             receive_q.put(result)
@@ -65,3 +64,4 @@ class LocalTask(object):
 if __name__ == '__main__':
     LocalTask().general(job="statistics")
     # LocalTask().general(job="test")
+    # LocalTask().general(job="start_test")

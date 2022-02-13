@@ -15,8 +15,8 @@ class CurRole(BaseScript):
             role = content[1]
             print("当前角色", role)
             enter = self.task_data["enter"]
-            enter.done_role.append(role)
-            enter.cur_role = role
+            enter.role_index = role
             self.click_x_y(97, 55)
+            time.sleep(3)
             return "end"
         return "get_role"
